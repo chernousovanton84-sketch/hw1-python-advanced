@@ -1,0 +1,39 @@
+image: python:3.11
+
+stages:
+  - linting
+  - testing
+
+before_script:
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+
+flake8:
+  stage: linting
+  script:
+    - flake8 main.py --max-line-length=88 --extend-ignore=E203,W503
+  allow_failure: false
+
+black:
+  stage: linting
+  script:
+    - black --check main.py --line-length 88
+  allow_failure: false
+
+isort:
+  stage: linting
+  script:
+    - isort --check-only main.py --profile black
+  allow_failure: false
+
+mypy:
+  stage: linting
+  script:
+    - mypy main.py --ignore-missing-imports
+  allow_failure: false
+
+pytest:
+  stage: testing
+  script:
+    - pytest tests/ -v
+  allow_failure: false
